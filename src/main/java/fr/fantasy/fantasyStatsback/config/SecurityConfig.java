@@ -64,18 +64,14 @@ public class SecurityConfig {
                             authorize.requestMatchers("/oauth2/**", "/login**").permitAll()
                                     .anyRequest().authenticated()
                     )*/
-                   // Disable "JSESSIONID" cookies
-                    .sessionManagement(config -> {
-                        config.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                    })
                     // Endpoint protection
                     .authorizeHttpRequests(config -> {
                         config.anyRequest().permitAll();
                     })
                     .oauth2Login(o2 ->
-                            o2.authorizationEndpoint(endpoint ->
+                            o2.authorizationEndpoint(Customizer.withDefaults()
                                     //endpoint.baseUri(OAuthController.AUTHORIZATION_BASE_URL)
-                                    endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
+                                            // endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
                                     //.authorizationRequestRepository(this.customStatelessAuthorizationRequestRepository)
 
                                     )
