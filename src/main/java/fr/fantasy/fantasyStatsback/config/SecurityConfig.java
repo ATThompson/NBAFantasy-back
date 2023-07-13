@@ -116,7 +116,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedMethods( Arrays.asList("GET","PUT","POST","DELETE" ) );
-            config.setAllowedOrigins( Collections.singletonList( "https://localhost:4200" ) );
+            config.setAllowedOrigins( Collections.singletonList( "hhttps://fantasystats.azurewebsites.net" ) );
             config.setAllowedHeaders( Collections.singletonList( "*" ) );
             config.setAllowCredentials(true);
 
