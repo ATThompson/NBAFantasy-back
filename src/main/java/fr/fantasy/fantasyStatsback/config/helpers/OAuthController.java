@@ -25,6 +25,8 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,7 +63,7 @@ public class OAuthController {
 
         var mapResponse = new HashMap<String,String>();
         mapResponse.put("accessToken",authClient.getAccessToken().getTokenValue());
-        mapResponse.put("expiredAt",authClient.getAccessToken().getExpiresAt().toString());
+        mapResponse.put("expiredAt", ZonedDateTime.ofInstant(authClient.getAccessToken().getExpiresAt(), ZoneId.of("Europe/Paris")).toString());
         mapResponse.put("refreshToken",authClient.getRefreshToken().getTokenValue());
         mapResponse.put("name",authClient.getPrincipalName());
         response.getWriter().write(
