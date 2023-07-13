@@ -32,9 +32,10 @@ public class CookieHelper {
     public static String generateCookie(String name, String value, Duration maxAge, HttpServletRequest request) {
         // Build cookie instance
         Cookie cookie = new Cookie(name, value);
-        if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
-            cookie.setDomain(COOKIE_DOMAIN);
-        }
+        //if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
+         //   cookie.setDomain(COOKIE_DOMAIN);
+        //}
+        cookie.setDomain(request.getRemoteHost());
         cookie.setHttpOnly(HTTP_ONLY);
         cookie.setSecure(SECURE);
         cookie.setMaxAge((int) maxAge.toSeconds());
