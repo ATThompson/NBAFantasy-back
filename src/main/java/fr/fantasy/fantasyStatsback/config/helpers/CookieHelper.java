@@ -5,6 +5,7 @@ package fr.fantasy.fantasyStatsback.config.helpers;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
+import org.apache.tomcat.util.http.SameSiteCookies;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -35,11 +36,11 @@ public class CookieHelper {
         //if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
          //   cookie.setDomain(COOKIE_DOMAIN);
         //}
-        cookie.setDomain(request.getRemoteHost());
         cookie.setHttpOnly(HTTP_ONLY);
         cookie.setSecure(SECURE);
         cookie.setMaxAge((int) maxAge.toSeconds());
         cookie.setPath("/");
+        cookie.setComment(SameSiteCookies.NONE.name());
         // Generate cookie string
         Rfc6265CookieProcessor processor = new Rfc6265CookieProcessor();
         return processor.generateHeader(cookie,request);
