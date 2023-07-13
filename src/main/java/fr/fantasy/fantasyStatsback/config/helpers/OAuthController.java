@@ -1,5 +1,6 @@
 package fr.fantasy.fantasyStatsback.config.helpers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,21 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.SerializationUtils;
 
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.util.UUID;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
 
 @Controller
 public class OAuthController {
@@ -35,49 +44,36 @@ public class OAuthController {
      */
     public static final String AUTHORIZATION_BASE_URL = "/oauth2/authorization";
 
-    /**
-     * Default = {@value OAuth2LoginAuthenticationFilter#DEFAULT_FILTER_PROCESSES_URI}
-     * <p>
-     * For instance:
-     * - /oauth2/callback/auth0
-     * - /oauth2/callback/facebook
-     * - /oauth2/callback/google
-     */
-    public static final String CALLBACK_BASE_URL = "/oauth2/callback";
 
     public static final String OAUTH_COOKIE_NAME = "OAUTH";
-    public static final String SESSION_COOKIE_NAME = "SESSION";
 
+    private final ObjectMapper mapper;
 
-
-    public void oauthRedirectResponse(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{ \"redirectUrl\": \"%s\" }".formatted(url));
+    public OAuthController(ObjectMapper mapper) {
+        this.mapper = mapper;
     }
 
-
-    public void oauthSuccessCallback(OAuth2AuthorizedClient client, Authentication authentication) {
-        System.out.println("CallBack succes");
-    }
 
     public void oauthSuccessResponse(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        //String accountId = AuthenticationHelper.retrieveAccountId(authentication);
-        OAuth2AuthenticationToken authTokenokey = ((OAuth2AuthenticationToken) authentication);
-        OAuth2AuthorizedClient authClient = this.authorizedClientService.loadAuthorizedClient(authTokenokey.getAuthorizedClientRegistrationId(), authTokenokey.getName());
-
-        //response.addHeader(HttpHeaders.SET_COOKIE, CookieHelper.generateExpiredCookie(OAUTH_COOKIE_NAME,request));
-        response.addHeader(HttpHeaders.SET_COOKIE, CookieHelper.generateCookie(SESSION_COOKIE_NAME, authClient.getAccessToken().getTokenValue(), Duration.ofDays(1),request));
+        OAuth2AuthenticationToken authToken = ((OAuth2AuthenticationToken) authentication);
+        OAuth2AuthorizedClient authClient = this.authorizedClientService.loadAuthorizedClient(authToken.getAuthorizedClientRegistrationId(), authToken.getName());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{ \"status\": \"success\" }");
+
+        var mapResponse = new HashMap<String,String>();
+        mapResponse.put("accessToken",authClient.getAccessToken().getTokenValue());
+        mapResponse.put("expiredAt",authClient.getAccessToken().getExpiresAt().toString());
+        mapResponse.put("refreshToken",authClient.getRefreshToken().getTokenValue());
+        mapResponse.put("name",authClient.getPrincipalName());
+        response.getWriter().write(
+                mapper.writeValueAsString( mapResponse )
+        );
     }
 
 
     public void oauthFailureResponse(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setHeader(HttpHeaders.SET_COOKIE, CookieHelper.generateExpiredCookie(OAUTH_COOKIE_NAME,request));
-        response.getWriter().write("{ \"status\": \"failure\" }");
+        response.getWriter().write("{ \"error\": \"unauthenticated\" }");
     }
 
 }

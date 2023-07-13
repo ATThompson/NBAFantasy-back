@@ -16,7 +16,7 @@ public class CookieHelper {
 
     private static final String COOKIE_DOMAIN = "localhost";
     private static final Boolean HTTP_ONLY = Boolean.TRUE;
-    private static final Boolean SECURE = Boolean.TRUE;
+    private static final Boolean SECURE = Boolean.FALSE;
 
     public static Optional<String> retrieve(Cookie[] cookies, String name) {
         if (isNull(cookies)) {
@@ -33,15 +33,13 @@ public class CookieHelper {
     public static String generateCookie(String name, String value, Duration maxAge, HttpServletRequest request) {
         // Build cookie instance
         Cookie cookie = new Cookie(name, value);
-        //if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
-         //   cookie.setDomain(COOKIE_DOMAIN);
-        //}
-        cookie.setDomain("fantasystats.azurewebsites.net");
+        if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
+            cookie.setDomain(COOKIE_DOMAIN);
+        }
         cookie.setHttpOnly(HTTP_ONLY);
         cookie.setSecure(SECURE);
         cookie.setMaxAge((int) maxAge.toSeconds());
         cookie.setPath("/");
-        cookie.setComment(SameSiteCookies.STRICT.name());
         // Generate cookie string
         Rfc6265CookieProcessor processor = new Rfc6265CookieProcessor();
         return processor.generateHeader(cookie,request);

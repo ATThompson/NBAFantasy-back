@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 @EnableWebSecurity
 @Configuration
@@ -41,7 +42,6 @@ public class SecurityConfig {
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService;
 
-    private final TokenFilter tokenFilter;
 
     private final ObjectMapper mapper;
     @Autowired
@@ -51,8 +51,7 @@ public class SecurityConfig {
     private CustomStatelessAuthorizationRequestRepository customStatelessAuthorizationRequestRepository;
 
 
-    public SecurityConfig(TokenFilter tokenFilter, ObjectMapper mapper) {
-        this.tokenFilter = tokenFilter;
+    public SecurityConfig( ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -61,7 +60,7 @@ public class SecurityConfig {
             http
                     .csrf(csrf -> csrf.disable())
                     .cors(Customizer.withDefaults())
-                  /**  .authorizeHttpRequests(authorize ->
+                   /**.authorizeHttpRequests(authorize ->
                             authorize.requestMatchers("/oauth2/**", "/login**").permitAll()
                                     .anyRequest().authenticated()
                     )*/
@@ -74,10 +73,9 @@ public class SecurityConfig {
                         config.anyRequest().permitAll();
                     })
                     .oauth2Login(o2 ->
-                            o2.authorizationEndpoint(endpoint ->
-                                    endpoint.baseUri(OAuthController.AUTHORIZATION_BASE_URL)
-                                    // endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
-                                    .authorizationRequestRepository(this.customStatelessAuthorizationRequestRepository)
+                            o2.authorizationEndpoint(Customizer.withDefaults()
+                                    //endpoint.baseUri(OAuthController.AUTHORIZATION_BASE_URL)endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
+                                    //.authorizationRequestRepository(this.customStatelessAuthorizationRequestRepository)
 
                                     )
                                     //.successHandler(this::successHandler)
@@ -97,7 +95,7 @@ public class SecurityConfig {
                     .exceptionHandling(exception ->
                             exception.authenticationEntryPoint(this::authenticationEntryPoint))
                     .logout(cust -> cust.addLogoutHandler( this::logout ).logoutSuccessHandler( this::onLogoutSuccess ));;
-            http.addFilterBefore( tokenFilter, UsernamePasswordAuthenticationFilter.class );
+            //http.addFilterBefore( tokenFilter, UsernamePasswordAuthenticationFilter.class );
             return http.build();
         }
     private void logout(HttpServletRequest request, HttpServletResponse response,
@@ -133,8 +131,12 @@ public class SecurityConfig {
             OAuth2AuthenticationToken authTokenokey = ((OAuth2AuthenticationToken) authentication);
             OAuth2AuthorizedClient authClient = this.authorizedClientService.loadAuthorizedClient(authTokenokey.getAuthorizedClientRegistrationId(), authTokenokey.getName());
 
+            var mapResponse = new HashMap<String,String>();
+            mapResponse.put("accessToken",authClient.getAccessToken().getTokenValue());
+            mapResponse.put("refreshToken",authClient.getRefreshToken().getTokenValue());
+            mapResponse.put("name",authClient.getPrincipalName());
             response.getWriter().write(
-                    mapper.writeValueAsString( Collections.singletonMap( "accessToken",authClient.getAccessToken().getTokenValue() ) )
+                    mapper.writeValueAsString( mapResponse )
             );
         }
 

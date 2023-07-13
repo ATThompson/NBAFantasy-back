@@ -11,14 +11,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
+//@Component
 public class TokenFilter extends OncePerRequestFilter {
 
 
-    @Override
+    //@Override
     protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain ) throws ServletException, IOException {
-        System.out.println("Internal FIlter");
+
         String authToken = request.getHeader( "Authorization" );
+        System.out.println("Internal FIlter "+authToken);
         if ( authToken != null ) {
             String token = authToken.split( " " )[ 1 ];
             //Authentication authentication = tokenStore.getAuth( token );

@@ -78,14 +78,21 @@ public class CustomStatelessAuthorizationRequestRepository implements Authorizat
     }
 
     private OAuth2AuthorizationRequest retrieveCookie(HttpServletRequest request) {
+
+
+        String headerAuthorization = request.getHeader("Authorization");
+        System.out.println("Autho header "+headerAuthorization);
+        System.out.println("State : " + request.getParameter("state"));
         return CookieHelper.retrieve(request.getCookies(), OAuthController.OAUTH_COOKIE_NAME)
                 .map(this::decrypt)
                 .orElse(null);
     }
 
     private void attachCookie(HttpServletResponse response, OAuth2AuthorizationRequest value) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        System.out.println("Attach cookie" +this.encrypt(value) );
         String cookie = CookieHelper.generateCookie(OAuthController.OAUTH_COOKIE_NAME, this.encrypt(value), OAUTH_COOKIE_EXPIRY,null);
         response.setHeader(HttpHeaders.SET_COOKIE, cookie);
+        response.setHeader(HttpHeaders.AUTHORIZATION,this.encrypt(value));
     }
 
     private void removeCookie(HttpServletResponse response) {
