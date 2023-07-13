@@ -69,9 +69,9 @@ public class SecurityConfig {
                         config.anyRequest().permitAll();
                     })
                     .oauth2Login(o2 ->
-                            o2.authorizationEndpoint(Customizer.withDefaults()
+                            o2.authorizationEndpoint(endpoint ->
                                     //endpoint.baseUri(OAuthController.AUTHORIZATION_BASE_URL)
-                                            // endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
+                                     endpoint.authorizationRequestRepository(new InMemoryRequestRepository())
                                     //.authorizationRequestRepository(this.customStatelessAuthorizationRequestRepository)
 
                                     )
