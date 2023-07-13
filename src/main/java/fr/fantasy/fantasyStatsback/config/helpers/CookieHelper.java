@@ -36,11 +36,11 @@ public class CookieHelper {
         //if (!"localhost".equals(COOKIE_DOMAIN)) { // https://stackoverflow.com/a/1188145
          //   cookie.setDomain(COOKIE_DOMAIN);
         //}
+        cookie.setDomain(".fantasystatsback.azurewebsites.net");
         cookie.setHttpOnly(HTTP_ONLY);
         cookie.setSecure(SECURE);
         cookie.setMaxAge((int) maxAge.toSeconds());
         cookie.setPath("/");
-        cookie.setComment(SameSiteCookies.NONE.name());
         // Generate cookie string
         Rfc6265CookieProcessor processor = new Rfc6265CookieProcessor();
         return processor.generateHeader(cookie,request);
