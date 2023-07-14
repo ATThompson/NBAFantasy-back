@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -46,6 +47,9 @@ public class SecurityConfig {
     private final ObjectMapper mapper;
     @Autowired
     private OAuthController oauthController;
+
+    @Value("${allowed.origins}")
+    private String allowedOrigins;
 
 
 
@@ -104,8 +108,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedMethods( Arrays.asList("GET","PUT","POST","DELETE" ) );
-            //config.setAllowedOrigins( Collections.singletonList( "https://localhost:4200" ) );
-            config.setAllowedOrigins( Collections.singletonList( "https://fantasystats.azurewebsites.net" ) );
+            config.setAllowedOrigins( Collections.singletonList( allowedOrigins ) );
             config.setAllowedHeaders( Collections.singletonList( "*" ) );
             config.setAllowCredentials(true);
 
