@@ -47,8 +47,6 @@ public class SecurityConfig {
     @Autowired
     private OAuthController oauthController;
 
-    @Autowired
-    private CustomStatelessAuthorizationRequestRepository customStatelessAuthorizationRequestRepository;
 
 
     public SecurityConfig( ObjectMapper mapper) {
@@ -111,30 +109,14 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedMethods( Arrays.asList("GET","PUT","POST","DELETE" ) );
-            //config.setAllowedOrigins( Collections.singletonList( "https://localhost:4200" ) );
-            config.setAllowedOrigins( Collections.singletonList( "https://fantasystats.azurewebsites.net" ) );
+            config.setAllowedOrigins( Collections.singletonList( "https://localhost:4200" ) );
+            //config.setAllowedOrigins( Collections.singletonList( "https://fantasystats.azurewebsites.net" ) );
             config.setAllowedHeaders( Collections.singletonList( "*" ) );
             config.setAllowCredentials(true);
 
             UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
             source.registerCorsConfiguration( "/**", config );
             return source;
-        }
-
-        private void successHandler(HttpServletRequest request,
-                                    HttpServletResponse response, Authentication authentication ) throws IOException {
-            System.out.println("Hello");
-            //String token = tokenStore.generateToken( authentication );
-            OAuth2AuthenticationToken authTokenokey = ((OAuth2AuthenticationToken) authentication);
-            OAuth2AuthorizedClient authClient = this.authorizedClientService.loadAuthorizedClient(authTokenokey.getAuthorizedClientRegistrationId(), authTokenokey.getName());
-
-            var mapResponse = new HashMap<String,String>();
-            mapResponse.put("accessToken",authClient.getAccessToken().getTokenValue());
-            mapResponse.put("refreshToken",authClient.getRefreshToken().getTokenValue());
-            mapResponse.put("name",authClient.getPrincipalName());
-            response.getWriter().write(
-                    mapper.writeValueAsString( mapResponse )
-            );
         }
 
     private void authenticationEntryPoint( HttpServletRequest request, HttpServletResponse response,
