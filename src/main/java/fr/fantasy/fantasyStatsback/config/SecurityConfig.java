@@ -58,10 +58,6 @@ public class SecurityConfig {
             http
                     .csrf(csrf -> csrf.disable())
                     .cors(Customizer.withDefaults())
-                   /**.authorizeHttpRequests(authorize ->
-                            authorize.requestMatchers("/oauth2/**", "/login**").permitAll()
-                                    .anyRequest().authenticated()
-                    )*/
                     // Endpoint protection
                     .authorizeHttpRequests(config -> {
                         config.anyRequest().permitAll();
@@ -104,7 +100,6 @@ public class SecurityConfig {
         // this code is just sending the 200 ok response and preventing redirect
         response.setStatus( HttpServletResponse.SC_OK );
     }
-
     @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration config = new CorsConfiguration();
@@ -118,7 +113,6 @@ public class SecurityConfig {
             source.registerCorsConfiguration( "/**", config );
             return source;
         }
-
     private void authenticationEntryPoint( HttpServletRequest request, HttpServletResponse response,
                                            AuthenticationException authException ) throws IOException {
         response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
