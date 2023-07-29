@@ -1,4 +1,4 @@
-package fr.fantasy.fantasyStatsback;
+package fr.atthompson.nbafantasyback;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

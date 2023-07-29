@@ -1,4 +1,4 @@
-package fr.fantasy.fantasyStatsback;
+package fr.atthompson.nbafantasyback;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,4 +1,4 @@
-package fr.fantasy.fantasyStatsback.config;
+package fr.atthompson.nbafantasyback.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
