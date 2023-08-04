@@ -13,9 +13,17 @@ import org.springframework.web.bind.annotation.*;
 public class TokenController {
     private final RefreshTokenService refreshTokenService;
 
+    private Integer chiffre=0;
+
     @PostMapping(value = "/refresh")
     public String refreshAccessToken(@RequestBody String refreshToken)
     {
         return refreshTokenService.getAccessTokenRefreshed(refreshToken);
+    }
+
+    @GetMapping(value = "/ajouter")
+    public Integer ajouter(){
+        chiffre++;
+        return chiffre;
     }
 }
